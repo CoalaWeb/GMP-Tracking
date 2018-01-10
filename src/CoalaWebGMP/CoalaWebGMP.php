@@ -31,17 +31,29 @@ use CoalaWebGMP\Track\Track;
 
 class CoalaWebGMP
 {
+
     protected $options;
 
+    /**
+     * CoalaWebGMP constructor.
+     *
+     * @param null $config
+     */
     public function __construct($config = null)
     {
-
         $config = new Options($config); //Config
         $this->config = $config;
         $this->track = new Track(); //Track
         $this->tools = new Tools(); //IP Tools
     }
 
+    /**
+     * Configuration
+     *
+     * @param $tid
+     * @param null $ip
+     * @param bool $ssl
+     */
     public function config($tid, $ip = null, $ssl = false)
     {
         $this->config->setId($tid);

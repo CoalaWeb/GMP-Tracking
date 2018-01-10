@@ -3,8 +3,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 /**
- * @package             CoalaWeb
- * @subpackage          Measurement Protocol
+ * @package             CoalaWebGMP
+ * @subpackage          CoalaWebGMP\Tools
  * @author              Steven Palmer
  * @author url          https://coalaweb.com/
  * @author email        support@coalaweb.com
@@ -25,6 +25,10 @@ defined('_JEXEC') or die('Restricted access');
 
 namespace CoalaWebGMP\Tools;
 
+/**
+ * Class Tools
+ * @package CoalaWebGMP\Tools
+ */
 class Tools extends CoalaWebGMP
 {
     /**

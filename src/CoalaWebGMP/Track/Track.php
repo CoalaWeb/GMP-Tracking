@@ -3,8 +3,8 @@
 defined('_JEXEC') or die('Restricted access');
 
 /**
- * @package             CoalaWeb
- * @subpackage          Measurement Protocol
+ * @package             CoalaWebGMP
+ * @subpackage          CoalaWebGMP\Track
  * @author              Steven Palmer
  * @author url          https://coalaweb.com/
  * @author email        support@coalaweb.com
@@ -26,7 +26,8 @@ defined('_JEXEC') or die('Restricted access');
 namespace CoalaWebGMP\Track;
 
 /**
- * Class MP_Track
+ * Class Track
+ * @package CoalaWebGMP\Track
  */
 class Track extends CoalaWebGMP
 {
@@ -39,6 +40,8 @@ class Track extends CoalaWebGMP
     }
 
     /**
+     * Send tracking data
+     *
      * @param $config
      * @param $fields
      * @return mixed
