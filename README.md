@@ -61,10 +61,10 @@ Note: **Config** and **Track** are same for all Tracking Types.
 <?php
 
 require 'CoalaWebGMP.php';
-$GA= new Google_MP();
-$GA->config('UA-XXXXXXX-Y',"1.2.56.4",FALSE);
-$event=$GA->Event("14578954555445","Click","Fetch","net","1");
-$GA->track($event);
+$gmp = new CoalaWebGMP();
+$gmp->config('UA-XXXXXXX-Y',"1.2.56.4",FALSE);
+$event = $gmp->event("14578954555445","Click","Fetch","net","1");
+$gmp->track($event);
 ?>
 ```
 
