@@ -2,7 +2,9 @@
 Server side Google analytics - This is PHP client Library for Google Measurement Protocol [Google Dev Guide](https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide)
 
 ## Overview
-Light weight and independent client Library to send data to Google Analytics. Composer is only needed to create the auto load files.
+Light weight and independent client Library to send data to Google Analytics. 
+
+**Note: Composer is only needed to create the auto load files.**
 
 ## Type Support
  - Page Tracking
@@ -14,7 +16,7 @@ Light weight and independent client Library to send data to Google Analytics. Co
 
 ```php
 <?php
-require_once(dirname(__FILE__) . '/../src/GMPTracking.php');
+require_once(dirname(__FILE__) . '/src/GMPTracking.php');
 $gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y');
 $options = array(
     'dh' => 'localhost.com',
@@ -29,17 +31,20 @@ $result = $gmp->track($event);
 ### Config
 
 ```
-$gmp->config('UA-XXXXXX-Y',NULL,TRUE); //(Tracking ID, User IP, Secure URL)
+$gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y'); // Tracking ID
 ```
-
  - Tracking ID (UA-XXXXXX-Y) - Required
- - User ip - Optional- Default = Null - system will retrieve the user IP
- - Secure - Optional - Default = False - Non SSL(https) connection
 
 ### Page Data
 
 ```
-$page = $gmp->page('Unique User ID', 'Domain', 'Page', 'Title');
+$options = array(
+    'cid' => '555',
+    'dh'  => 'localhost.com',
+    'dp'  => 'home',
+    'dt'  => 'Title'
+);
+$event = $gmp->page($options);
 ```
 
  - Unique User ID is the session identifier - Optional -  if null UUID will be generated
@@ -59,12 +64,13 @@ Note: **Config** and **Track** are same for all Tracking Types.
 
 ```php
 <?php
-require_once(dirname(__FILE__) . '/../src/GMPTracking.php');
+require_once(dirname(__FILE__) . '/src/GMPTracking.php');
 $gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y');
 $options = array(
     'ec' => 'Category',
     'ea' => 'Action',
-    'el' => 'Label'
+    'el' => 'Label',
+    'ev' => 1
 );
 $event = $gmp->event($options);
 $result = $gmp->track($event);
@@ -76,7 +82,14 @@ Note: For **Config** and **Track** see above.
 ### Event Data
 
 ```
-$event = $gmp->Event("Unique User ID", "Category", "Action", "Label", "Value");
+$options = array(
+    'cid' => '555',
+    'ec' => 'Category',
+    'ea' => 'Action',
+    'el' => 'Label',
+    'ev' => 1
+);
+$event = $gmp->event($options);
 ```
 
 - Event Unique User ID - Optional - If null one will be generated

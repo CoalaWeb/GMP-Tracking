@@ -7,7 +7,8 @@ $gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y');
 $options = array(
     'ec' => 'Category',
     'ea' => 'Action',
-    'el' => 'Label'
+    'el' => 'Label',
+    'ev' => 1
 );
 $event = $gmp->event($options);
 $result = $gmp->track($event);
