@@ -1,17 +1,16 @@
 <?php
 
-defined('_JEXEC') or die('Restricted access');
+namespace CoalaWeb\GMP\Tools;
 
 /**
- * @package             CoalaWebGMP
- * @subpackage          CoalaWebGMP\Tools
+ * @package             CoalaWeb\GMP
  * @author              Steven Palmer
  * @author url          https://coalaweb.com/
  * @author email        support@coalaweb.com
  * @license             GNU/GPL, see /assets/en-GB.license.txt
  * @copyright           Copyright (c) 2018 Steven Palmer All rights reserved.
  *
- * CoalaWeb Measurement Protocol is free software: you can redistribute it and/or modify
+ * CoalaWeb GMP Tracking is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
@@ -23,22 +22,21 @@ defined('_JEXEC') or die('Restricted access');
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-namespace CoalaWebGMP\Tools;
+defined('_JEXEC') or die;
 
 /**
- * Class Tools
- * @package CoalaWebGMP\Tools
+ * Class ToolIP
  */
-class Tools extends CoalaWebGMP
+class ToolIP
 {
     /**
-     * Get users IP address
+     * Build users IP address
      *
      * @return string
      */
-    public static function getUserIP()
+    public function getUserIP()
     {
-        $ip = self::_real_getUserIP();
+        $ip = $this->realGetUserIP();
 
         if ((strstr($ip, ',') !== false) || (strstr($ip, ' ') !== false)) {
             $ip = str_replace(' ', ',', $ip);
@@ -57,11 +55,11 @@ class Tools extends CoalaWebGMP
     }
 
     /**
-     * Gets the visitor's IP address
+     * Gets the users IP address
      *
      * @return string
      */
-    private static function _real_getUserIP()
+    private function realGetUserIP()
     {
 
         // Normally the $_SERVER superglobal is set
@@ -84,22 +82,20 @@ class Tools extends CoalaWebGMP
                         // trim for safety measures
                         $ip = trim($ip);
                         // attempt to validate IP
-                        if (self::validate_ip($ip)) {
+                        if ($this->validateIp($ip)) {
                             return $ip;
                         }
                     }
                 }
             }
 
-
-            return self::validate_ip($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
+            return $this->validateIp($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : '';
         }
 
         // This part is executed on PHP running as CGI, or on SAPIs which do
         // not set the $_SERVER superglobal
         // If getenv() is disabled, you're screwed
         if (function_exists('getenv')) {
-
 
             $ip_keys = array(
                 'HTTP_CLIENT_IP',
@@ -111,21 +107,20 @@ class Tools extends CoalaWebGMP
                 'REMOTE_ADDR'
             );
 
-
             foreach ($ip_keys as $key) {
                 if (getenv($key)) {
                     foreach (explode(',', getenv($key)) as $ip) {
                         // trim for safety measures
                         $ip = trim($ip);
                         // attempt to validate IP
-                        if (self::validate_ip($ip)) {
+                        if ($this->validateIp($ip)) {
                             return $ip;
                         }
                     }
                 }
             }
 
-            return self::validate_ip(getenv('REMOTE_ADDR')) ? getenv('REMOTE_ADDR') : '';
+            return $this->validateIp(getenv('REMOTE_ADDR')) ? getenv('REMOTE_ADDR') : '';
         }
 
         // Catch-all case for broken servers, apparently
@@ -133,17 +128,17 @@ class Tools extends CoalaWebGMP
     }
 
     /**
-     * Ensures an ip address is both a valid IP and does not fall within a private network range.
+     * Ensures an ip address is both a valid IP and does not fall
+     * within a private network range.
      *
      * @param $ip
      * @return bool
      */
-    protected static function validate_ip($ip)
+    private function validateIp($ip)
     {
         if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4) === false) {
             return false;
         }
         return true;
     }
-
 }

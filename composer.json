@@ -1,0 +1,28 @@
+{
+  "name": "CoalaWeb/GMPTracking",
+  "description": "Server-Side PHP Client to communicate to Google Analytics over the Google Measurement Protocol",
+  "type": "library",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Steven Palmer",
+      "homepage": "https://coalaweb.com",
+      "email": "support@coalaweb.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.4.0"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "CoalaWeb\\GMP\\": "src"
+    }
+  },
+  "config": {
+    "platform": {
+      "php": "5.4.0"
+    }
+  }
+}

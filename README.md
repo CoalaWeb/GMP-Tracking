@@ -2,7 +2,7 @@
 Server side Google analytics - This is PHP client Library for Google Measurement Protocol [Google Dev Guide](https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide)
 
 ## Overview
-Light weight and independent client Library to send data to Google Analytics.
+Light weight and independent client Library to send data to Google Analytics. Composer is only needed to create the auto load files.
 
 ## Type Support
  - Page Tracking
@@ -14,11 +14,15 @@ Light weight and independent client Library to send data to Google Analytics.
 
 ```php
 <?php
-require 'CoalaWebGMP.php';
-$gmp = new CoalaWebGMP();
-$gmp->config('UA-XXXXXX-Y',NULL,TRUE); //(Tracking ID, User IP, Secure URL)
-$page = $gmp->page('Unique User ID', 'Domain', 'Page', 'Title');
-$gmp->track($page); // Send tracking information
+require_once(dirname(__FILE__) . '/../src/GMPTracking.php');
+$gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y');
+$options = array(
+    'dh' => 'localhost.com',
+    'dp' => 'home',
+    'dt' => 'Title'
+);
+$event = $gmp->page($options);
+$result = $gmp->track($event);
 ?>
 ```
 
@@ -55,12 +59,15 @@ Note: **Config** and **Track** are same for all Tracking Types.
 
 ```php
 <?php
-
-require 'CoalaWebGMP.php';
-$gmp = new CoalaWebGMP();
-$gmp->config('UA-XXXXXXX-Y',NULL,TRUE); //(Tracking ID, User IP, Secure URL)
-$event = $gmp->event("Unique User ID", "Category", "Action", "Label", "Value");
-$gmp->track($event);
+require_once(dirname(__FILE__) . '/../src/GMPTracking.php');
+$gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y');
+$options = array(
+    'ec' => 'Category',
+    'ea' => 'Action',
+    'el' => 'Label'
+);
+$event = $gmp->event($options);
+$result = $gmp->track($event);
 ?>
 ```
 

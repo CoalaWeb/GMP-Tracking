@@ -3,3 +3,11 @@ TODO.md
 
 # PHP Storm #
 .idea/
+
+# Composer #
+vendor/
+composer.phar
+composer.lock
+
+# PHP Unit #
+phpunit.phar
