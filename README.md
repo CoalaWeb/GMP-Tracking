@@ -14,86 +14,113 @@ Light weight and independent client Library to send data to Google Analytics.
 
 ## Page Tracking
 
-```php
-<?php
-require_once(dirname(__FILE__) . '/src/GMPTracking.php');
-$gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y');
-$options = array(
-    'dh' => 'localhost.com',
-    'dp' => 'home',
-    'dt' => 'Title'
-);
-$event = $gmp->page($options);
-$result = $gmp->track($event);
-?>
-```
 
-### Config
+    <?php
+    require_once(dirname(__FILE__) . '/src/GMPTracking.php');
+    
+    $options = array();
+    
+    $gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y', $options);
+    $page = $gmp->createTracking('Page');
+    
+    $page->setDocumentLocation('http://example.com/home?a=b');
+    $page->setDocumentHost('example.com');
+    $page->setDocumentPath('/path/example');
+    $page->setDocumentTitle('Example Title');
+    
+    $result = $gmp->sendTracking($page);
+    
+    // Returns an array with result, status and errors. Very useful when using the debug option
+    echo $result;
+    ?>
 
-```
-$gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y'); // Tracking ID
-```
+
+### Configuration Options
+
+#### Below are the current options and their default states.
+
+    $options = array(
+        'client_create_random_id' => true, // Create a random client id when the class can't fetch the current client id or none is provided by "client_id"
+        'client_fallback_id' => 555, // Fallback client id when cid was not found and random client id is off
+        'client_id' => null,    // Override client id
+        'user_id' => null,  // Current user id
+        'v' => 1, // API protocol version
+        'debug' => FALSE // API end point URL
+    );
+
+
+    $gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y', $options);
+    
  - Tracking ID (UA-XXXXXX-Y) - Required
+ - Options array - Optional (Omit if not needed)
 
 ### Page Data
 
-```
-$options = array(
-    'cid' => '555',
-    'dh'  => 'localhost.com',
-    'dp'  => 'home',
-    'dt'  => 'Title'
-);
-$event = $gmp->page($options);
-```
+    $page->setDocumentLocation('http://example.com/home?a=b');
+    $page->setDocumentHost('example.com');
+    $page->setDocumentPath('/path/example');
+    $page->setDocumentTitle('Example Title');
 
- - Unique User ID is the session identifier - Optional -  if null UUID will be generated
- - Hostname - Required
- - Page - Required
- - Title - Required
+
+ - Document location URL - Optional
+ - Document Host Name - Optional
+ - Document Path - Required
+ - Document Title - Optional
  
 ## Send Tracking Data
 ```
-$gmp->track($page);
+$gmp->sendTracking($page);
 ```
-Track will push to server.
+Note: If you wish to debug your settings set the **debug** option to **true** and then assign **sendTracking** to a variable to be echoed.
 
-Note: **Config** and **Track** are same for all Tracking Types.
- 
+```
+$options = array(
+    'debug' => true
+);
+
+$result = $gmp->sendTracking($page);
+echo $result;
+```
+
 ## Event Tracking
 
-```php
-<?php
-require_once(dirname(__FILE__) . '/src/GMPTracking.php');
-$gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y');
-$options = array(
-    'ec' => 'Category',
-    'ea' => 'Action',
-    'el' => 'Label',
-    'ev' => 1
-);
-$event = $gmp->event($options);
-$result = $gmp->track($event);
-?>
-```
+    <?php
+    require_once(dirname(__FILE__) . '/src/GMPTracking.php');
+    
+    $options = array();
+    $gmp = new CoalaWeb\GMP\GMPTracking('UA-XXXXXXX-Y', $options);
+    
+    $event = $gmp->createTracking('Event');
+    $event->setEventCategory('Category');
+    $event->setEventAction('Action');
+    $event->setEventLabel('Label');
+    $event->setEventValue(1);
+    
+    $result = $gmp->sendTracking($event);
+    
+    // Returns an array with result, status and errors. Very useful when using the debug option
+    echo $result;
+    ?>
 
-Note: For **Config** and **Track** see above.
+
+Note: The **Configuration Options** and **Send Tracking** settings are the same for hit types.
 
 ### Event Data
 
-```
-$options = array(
-    'cid' => '555',
-    'ec' => 'Category',
-    'ea' => 'Action',
-    'el' => 'Label',
-    'ev' => 1
-);
-$event = $gmp->event($options);
-```
+    $event->setEventCategory('Category');
+    $event->setEventAction('Action');
+    $event->setEventLabel('Label');
+    $event->setEventValue(1);
 
-- Event Unique User ID - Optional - If null one will be generated
 - Event Category - Required
 - Event Action - Required
-- Event Label - Required
+- Event Label - Optional
 - Event Value - Optional
+
+## Useful Info
+
+### Response Codes
+
+The Measurement Protocol will return a 2xx status code if the HTTP request was received. The Measurement Protocol does not return an error code if the payload data was malformed, or if the data in the payload was incorrect or was not processed by Google Analytics.
+
+If you do not get a 2xx status code, you should NOT retry the request. Instead, you should stop and correct any errors in your HTTP request.

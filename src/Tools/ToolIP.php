@@ -36,7 +36,7 @@ class ToolIP
      */
     public function getUserIP()
     {
-        $ip = $this->realGetUserIP();
+        $ip = self::realGetUserIP();
 
         if ((strstr($ip, ',') !== false) || (strstr($ip, ' ') !== false)) {
             $ip = str_replace(' ', ',', $ip);

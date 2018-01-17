@@ -28,7 +28,6 @@ defined('_JEXEC') or die;
 require_once(dirname(__FILE__) . '/../vendor/autoload.php');
 
 use CoalaWeb\GMP\Tracking\Track;
-use CoalaWeb\GMP\Tools\ToolIP;
 
 /**
  * Class GMPTracking
@@ -40,120 +39,190 @@ class GMPTracking
      * @var
      */
     protected $track;
-
-    /**
-     * Tool class
-     * @var
-     */
-    protected $tool;
-
     /**
      * Default options
      * @var array
      */
     protected $options = array(
-        'v' => 1,
-        'debug' => FALSE
+        'client_create_random_id' => true, // Create a random client id when the class can't fetch the current client id or none is provided by "client_id"
+        'client_fallback_id' => 555, // Fallback client id when cid was not found and random client id is off
+        'client_id' => null,    // Override client id
+        'user_id' => null,  // Current user id
+        'v' => 1, // API protocol version
+        'debug' => FALSE // API end point URL
     );
+    /** @var null */
+    private $analyticsAccountUid = null;
 
     /**
      * GMPTracking constructor.
-     * @param $tid
-     */
-    public function __construct($tid)
-    {
-        $this->setId($tid);
-        $this->setUip();
-    }
-
-    /**
-     * Page type tracking
-     * @param $options
-     * @return array
-     */
-    public function Page($options)
-    {
-        // ** Possible Options **
-        // 'cid' Unique ID - 555
-        // 'dh' Document Host - localhost.com
-        // 'dp' Document Page - home
-        // 'dt' Document Title - A Title
-
-        $eventValues =  array(
-            'v' => $this->options['v'],     // Version  1
-            't' => "pageview",              // Type Page View
-            'tid' => $this->options['tid'], // Tracking ID
-            'cid' => $this->UUID(),         // Unique User ID
-            'uip' => $this->options['uip']  // User IP
-        );
-
-        if (!isset($options->cid) || empty($options->cid)){
-            //Generate new Unique User id
-            $options['cid'] = $this->UUID();
-        }
-
-        $all = array_merge($eventValues, $options);
-
-        return $all;
-    }
-
-    /**
-     * Event type tracking
+     * @param $analyticsAccountUid
      * @param array $options
-     * @return array
+     * @throws Exception\InvalidArgumentException
      */
-    public function Event($options = array())
+    public function __construct($analyticsAccountUid, $options = array())
     {
-        // ** Possible Options **
-        // 'cid' Unique ID - 555
-        // 'ec'  Event Category - Category 01
-        // 'ea'  Event Action - Sent
-        // 'el'  Event Label - Form Sent
-        // 'ev'  Event Value - 123
-
-        $eventValues = array(
-            'v' => $this->options['v'],     // Version  1
-            't' => "event",                 // Type
-            'tid' => $this->options['tid'], // Tracking ID
-            'cid' => $this->UUID(),         // Unique user ID
-            'el' => NULL,                   // Default Event Label
-            'ev' => 1                       // Default event value
-        );
-
-        if (!isset($options->cid) || empty($options->cid)){
-            //Generate new Unique User id
-            $options['cid'] = $this->UUID();
+        if (empty($analyticsAccountUid)) {
+            throw new Exception\InvalidArgumentException('Google Account/Tracking ID not provided!');
         }
 
-        $all = array_merge($eventValues, $options);
+        $this->analyticsAccountUid = $analyticsAccountUid;
 
-        return $all;
-
+        if (!empty($options)) {
+            $this->setOptions(
+                array_merge($this->options, $options)
+            );
+        }
     }
 
     /**
-     * Track-Push data to server
-     * @param $options
+     * Return Analytics Account ID
+     *
+     * @return null
+     */
+    public function getAnalyticsAccountUid()
+    {
+        return $this->analyticsAccountUid;
+    }
+
+    /**
+     * Set the Analytics Account ID
+     *
+     * @param null $analyticsAccountUid
+     */
+    public function setAnalyticsAccountUid($analyticsAccountUid)
+    {
+        $this->analyticsAccountUid = $analyticsAccountUid;
+    }
+
+    /**
+     * Get hit type options from specific abstract class
+     * @param $className
+     * @param null $options
+     * @return bool
+     */
+    public function createTracking($className, $options = null)
+    {
+        if (strstr(strtolower($className), 'abstracttracking')) {
+            return false;
+        }
+        $class = 'CoalaWeb\GMP\Tracking\\' . $className;
+
+        if ($options) {
+            return new $class($options);
+        }
+        return new $class;
+    }
+
+    /**
+     * Send all the options over to be sent as a hit
+     * @param Tracking\AbstractTracking $tracking
      * @return array
      */
-    public function track($options)
+    public function sendTracking(Tracking\AbstractTracking $tracking)
     {
+        $payloadData = $this->getTrackingPayloadData($tracking);
+
         $this->track = new Track();
 
-        $trackInfo = $this->track->sendTracking($options);
+        $trackInfo = $this->track->sendTracking($payloadData);
 
         return $trackInfo;
     }
 
     /**
-     * Create a Universal Unique User ID
+     * Combine hit type options from abstract class to common options ready to send
+     * @param Tracking\AbstractTracking $event
+     * @return array
+     */
+    protected function getTrackingPayloadData(Tracking\AbstractTracking $event)
+    {
+        // Options from abstract class
+        $payloadData = $event->getPackage();
+
+        // Add common options
+        $payloadData['v'] = $this->getOption('v');; // Protocol version
+        $payloadData['tid'] = $this->analyticsAccountUid; // Account ID
+        $payloadData['uid'] = $this->getOption('user_id'); // User ID
+        $payloadData['cid'] = $this->getClientId(); // Client ID
+        $payloadData['debug'] = $this->getOption('debug'); // API endpoint URL
+
+        return array_filter($payloadData);
+    }
+
+    /**
+     * @param $key
+     * @return mixed|null
+     */
+    public function getOption($key)
+    {
+        if (!isset($this->options[$key])) {
+            return null;
+        }
+        return $this->options[$key];
+    }
+
+    /**
+     * Return the Current Client Id
+     *
      * @return string
      */
-    public function UUID()
+    public function getClientId()
     {
-        return sprintf('%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
+        $clientId = $this->getOption('client_id');
+
+        if ($clientId) {
+            return $clientId;
+        }
+        // collect user specific data
+        if (isset($_COOKIE['_ga'])) {
+            $gaCookie = explode('.', $_COOKIE['_ga']);
+            if (isset($gaCookie[2])) {
+                // check if uuid
+                if ($this->checkUuid($gaCookie[2])) {
+                    // uuid set in cookie
+                    return $gaCookie[2];
+                } elseif (isset($gaCookie[2]) && isset($gaCookie[3])) {
+                    // google old client id
+                    return $gaCookie[2] . '.' . $gaCookie[3];
+                }
+            }
+        }
+        // nothing found - fallback
+        $generateClientId = $this->getOption('client_create_random_id');
+        if ($generateClientId) {
+            return $this->generateUuid();
+        }
+        return $this->getOption('client_fallback_id');
+    }
+
+    /**
+     * Check if is a valid UUID v4
+     *
+     * @param $uuid
+     * @return int
+     */
+    final private function checkUuid($uuid)
+    {
+        return preg_match(
+            '#^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$#i',
+            $uuid
+        );
+    }
+
+    /**
+     * Generate UUID v4 function - needed to generate a CID when one isn't available
+     *
+     * @author Andrew Moore http://www.php.net/manual/en/function.uniqid.php#94959
+     * @return string
+     */
+    final private function generateUuid()
+    {
+        return sprintf(
+            '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
             // 32 bits for "time_low"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
             // 16 bits for "time_mid"
             mt_rand(0, 0xffff),
             // 16 bits for "time_hi_and_version",
@@ -164,29 +233,57 @@ class GMPTracking
             // two most significant bits holds zero and one for variant DCE1.1
             mt_rand(0, 0x3fff) | 0x8000,
             // 48 bits for "node"
-            mt_rand(0, 0xffff), mt_rand(0, 0xffff), mt_rand(0, 0xffff)
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff),
+            mt_rand(0, 0xffff)
         );
-
     }
 
     /**
-     * Set the Tracking ID
+     * Return Options
      *
-     * @param $id
+     * @return array
      */
-    public function setId($id)
+    public function getOptions()
     {
-        $this->options['tid'] = $id;
-
+        return $this->options;
     }
 
     /**
-     * Set the user IP
+     * Set Options
+     *
+     * @param $options
+     * @throws Exception\InvalidArgumentException
      */
-    public function setUip()
+    public function setOptions($options)
     {
-        $this->tool = new ToolIP();
-        $ip = $this->tool->getUserIP();
-        $this->options['uip'] = $ip;
+        if (!is_array($options)) {
+            throw new Exception\InvalidArgumentException(sprintf(
+                '[%s] expects array; received [%s]',
+                __METHOD__,
+                gettype($options)
+            ));
+        }
+        $this->options = $options;;
     }
+
+    /**
+     * Sets the used clientId
+     *
+     * @param $clientId
+     */
+    public function setClientId($clientId)
+    {
+        $this->setOption('client_id', $clientId);
+    }
+
+    public function setOption($key, $value)
+    {
+        if (isset($this->options[$key]) && is_array($this->options[$key]) && is_array($value)) {
+            $oldValues = $this->options[$key];
+            $value = array_merge($oldValues, $value);
+        }
+        $this->options[$key] = $value;
+    }
+
 }
