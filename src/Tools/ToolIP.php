@@ -3,12 +3,11 @@
 namespace CoalaWeb\GMP\Tools;
 
 /**
- * @package             CoalaWeb\GMP
- * @author              Steven Palmer
- * @author url          https://coalaweb.com/
- * @author email        support@coalaweb.com
- * @license             GNU/GPL, see /assets/en-GB.license.txt
- * @copyright           Copyright (c) 2018 Steven Palmer All rights reserved.
+ * @package     CoalaWeb\GMP
+ * @author      Steven Palmer <support@coalaweb.com>
+ * @link        https://coalaweb.com/
+ * @license     GNU/GPL, see /assets/en-GB.license.txt
+ * @copyright   Copyright (c) 2018 Steven Palmer All rights reserved.
  *
  * CoalaWeb GMP Tracking is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
