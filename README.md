@@ -1,7 +1,9 @@
 # Google Measurement Protocol Tracking
-Server side Google analytics - This is PHP client Library for Google Measurement Protocol [Google Dev Guide](https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide)
+
+Server side Google analytics - This is PHP client Library for the [Google Measurement Protocol](https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide)
 
 ## Overview
+
 Light weight and independent client Library to send tracking data to Google Analytics. 
 
 **Note: Composer is only needed to create the auto load files.**
@@ -10,9 +12,9 @@ Light weight and independent client Library to send tracking data to Google Anal
  - Page Tracking
  - Event Tracking
 
-# Getting Started
+## Getting Started
 
-## Page Tracking
+### Page Tracking
 
 
     <?php
@@ -35,9 +37,9 @@ Light weight and independent client Library to send tracking data to Google Anal
     ?>
 
 
-### Configuration Options
+#### Configuration Options
 
-#### Below are the current options and their default states.
+Below are the current options and their default states.
 
     $options = array(
         'client_create_random_id' => true, // Create a random client id when the class can't fetch the current client id or none is provided by "client_id"
@@ -54,7 +56,7 @@ Light weight and independent client Library to send tracking data to Google Anal
  - Tracking ID (UA-XXXXXX-Y) - Required
  - Options array - Optional (Omit if not needed)
 
-### Page Data
+#### Page Data
 
     $page->setDocumentLocation('http://example.com/home?a=b');
     $page->setDocumentHost('example.com');
@@ -67,7 +69,7 @@ Light weight and independent client Library to send tracking data to Google Anal
  - Document Path - Required
  - Document Title - Optional
  
-## Send Tracking Data
+#### Send Tracking Data
 ```
 $gmp->sendTracking($page);
 ```
@@ -82,7 +84,7 @@ $result = $gmp->sendTracking($page);
 echo $result;
 ```
 
-## Event Tracking
+### Event Tracking
 
     <?php
     require_once(dirname(__FILE__) . '/src/GMPTracking.php');
@@ -105,7 +107,7 @@ echo $result;
 
 Note: The **Configuration Options** and **Send Tracking** settings are the same for hit types.
 
-### Event Data
+#### Event Data
 
     $event->setEventCategory('Category');
     $event->setEventAction('Action');
@@ -121,6 +123,10 @@ Note: The **Configuration Options** and **Send Tracking** settings are the same 
 
 ### Response Codes
 
-The Measurement Protocol will return a 2xx status code if the HTTP request was received. The Measurement Protocol does not return an error code if the payload data was malformed, or if the data in the payload was incorrect or was not processed by Google Analytics.
+ - The Measurement Protocol will return a 2xx status code if the HTTP request was received. 
+ - The Measurement Protocol does not return an error code if the payload data was malformed, or if the data in the payload was incorrect or was not processed by Google Analytics.
+ - If you do not get a 2xx status code, you should NOT retry the request. Instead, you should stop and correct any errors in your HTTP request.
 
-If you do not get a 2xx status code, you should NOT retry the request. Instead, you should stop and correct any errors in your HTTP request.
+## <a name="license"></a>License
+
+Licensed under the [GPL](https://www.gnu.org/licenses/gpl.html) license.
