@@ -13,6 +13,7 @@ $event = $gmp->createTracking('Event');
 $event->setEventCategory('Category');
 $event->setEventAction('Action');
 $event->setEventLabel('Label');
+$event->setEventValue(100);
 $result = $gmp->sendTracking($event);
 
 echo $result;

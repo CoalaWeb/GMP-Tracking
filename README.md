@@ -1,8 +1,8 @@
-# Measurement Protocol-PHP
+# Google Measurement Protocol Tracking
 Server side Google analytics - This is PHP client Library for Google Measurement Protocol [Google Dev Guide](https://developers.google.com/analytics/devguides/collection/protocol/v1/devguide)
 
 ## Overview
-Light weight and independent client Library to send data to Google Analytics. 
+Light weight and independent client Library to send tracking data to Google Analytics. 
 
 **Note: Composer is only needed to create the auto load files.**
 
