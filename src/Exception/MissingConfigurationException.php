@@ -6,6 +6,7 @@ namespace CoalaWeb\GMP\Exception;
 /**
  * @package     CoalaWeb\GMP
  * @author      Steven Palmer <support@coalaweb.com>
+ * @git         https://github.com/CoalaWeb
  * @link        https://coalaweb.com/
  * @license     GNU/GPL, see /assets/en-GB.license.txt
  * @copyright   Copyright (c) 2018 Steven Palmer All rights reserved.
@@ -19,7 +20,7 @@ namespace CoalaWeb\GMP\Exception;
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ * along with this program.  If not, see <https://www.gnu.org/licenses/gpl.html>.
  */
 
 defined('_JEXEC') or die;
